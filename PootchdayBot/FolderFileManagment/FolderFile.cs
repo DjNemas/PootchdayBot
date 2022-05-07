@@ -16,7 +16,7 @@ namespace PootchdayBot.FolderManagment
         private static void CreateDB()
         {
             DatabaseContext.DB.Database.EnsureCreated();
-            Log.DebugDiscord("DB Created or Loaded", true);
+            Log.DebugDiscord("DB Created or Loaded");
         }
 
         private static void InitFolder()
@@ -46,7 +46,7 @@ namespace PootchdayBot.FolderManagment
 
                 doc.Save(Path.Combine(Folder.Config, Files.Config));
 
-                Log.DebugDiscord("Config File Created!", true);
+                Log.DebugDiscord("Config File Created!");
             }
         }
 
