@@ -22,7 +22,7 @@ namespace PootchdayBot.SlashCommands
         }
 
         [SlashCommand("setze", "[Jeder] Trage dein Geburstag ein. (Das Jahr wird nur zur Ermittlung eines Schaltjahres genutzt!)")]
-        public async Task Setze(int tag, Monat monat, int jahr)
+        public async Task Setze(int tag, Monat monat, int? jahr = null)
         {
             if(DatabaseContext.DB.Birthdays.FirstOrDefault(x => x.AccountID == Context.User.Id && x.GuildID == Context.Guild.Id) != null)
             {
@@ -33,7 +33,14 @@ namespace PootchdayBot.SlashCommands
             DateTime dt;
             try
             {
-                dt = new DateTime(jahr, (int)monat, tag);
+                if (jahr == null)
+                {
+                    dt = new DateTime(2020, (int)monat, tag);
+                }
+                else
+                {
+                    dt = new DateTime(Convert.ToInt32(jahr), (int)monat, tag);
+                }
             }
             catch (Exception)
             {
