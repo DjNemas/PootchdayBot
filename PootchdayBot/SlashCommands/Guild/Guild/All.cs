@@ -107,7 +107,7 @@ namespace PootchdayBot.SlashCommands
 
                 foreach (var birthdays in listBirthdays)
                 {
-                    message += $"{birthdays.GlobalUsername} hat am {birthdays.Birthday.ToString("dd.MMMM", new CultureInfo("de-DE"))} Geburtstag.";
+                    message += $"{birthdays.GlobalUsername} hat am {birthdays.Birthday.ToString("dd. MMMM", new CultureInfo("de-DE"))} Geburtstag.";
                 }
                 await RespondAsync(message);
             }
