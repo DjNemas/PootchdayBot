@@ -105,10 +105,16 @@ namespace PootchdayBot.SlashCommands
                 else
                     message = "In den kommenden 30 Tagen haben folgende User Geburtstag:\n";
 
-                foreach (var birthdays in listBirthdays)
-                {
-                    message += $"{birthdays.GlobalUsername} hat am {birthdays.Birthday.ToString("dd. MMMM", new CultureInfo("de-DE"))} Geburtstag.";
-                }
+                if(letzte)
+                    foreach (var birthdays in listBirthdays)
+                    {
+                        message += $"{birthdays.GlobalUsername} hatte am {birthdays.Birthday.ToString("dd. MMMM", new CultureInfo("de-DE"))} Geburtstag. :kagoparty:";
+                    }
+                else
+                    foreach (var birthdays in listBirthdays)
+                    {
+                        message += $"{birthdays.GlobalUsername} hat am {birthdays.Birthday.ToString("dd. MMMM", new CultureInfo("de-DE"))} Geburtstag. :kagoparty:";
+                    }
                 await RespondAsync(message);
             }
             else
