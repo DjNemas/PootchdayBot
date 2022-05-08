@@ -2,6 +2,7 @@
 using Discord.WebSocket;
 using PootchdayBot.Database.Models;
 using PootchdayBot.Database;
+using System.Globalization;
 
 namespace PootchdayBot.SlashCommands
 {
@@ -84,7 +85,6 @@ namespace PootchdayBot.SlashCommands
             foreach (var birthdays in birthdaysDB)
             {
                 DateTime userBirthday = new DateTime(DateTime.Now.Year, birthdays.Birthday.Month, birthdays.Birthday.Day);
-
                 if (letzte)
                 {
                     if (userBirthday >= DateTime.Now.AddDays(-31) && userBirthday <= DateTime.Now)
@@ -107,7 +107,7 @@ namespace PootchdayBot.SlashCommands
 
                 foreach (var birthdays in listBirthdays)
                 {
-                    message += $"{birthdays.GlobalUsername} hat am {birthdays.Birthday.ToString("dd.MMMM")} Geburtstag.";
+                    message += $"{birthdays.GlobalUsername} hat am {birthdays.Birthday.ToString("dd.MMMM", new CultureInfo("de-DE"))} Geburtstag.";
                 }
                 await RespondAsync(message);
             }
