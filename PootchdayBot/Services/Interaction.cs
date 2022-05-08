@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using PootchdayBot.Database;
 using PootchdayBot.Logging;
 using System.Reflection;
 
@@ -35,6 +36,52 @@ namespace PootchdayBot.Services
 
             client.JoinedGuild += Client_JoinedGuild;
 
+            client.ChannelDestroyed += Client_ChannelDestroyed;
+
+            client.LeftGuild += Client_LeftGuild;
+
+        }
+
+        private async Task Client_LeftGuild(SocketGuild guild)
+        {
+            // Delete Config for Guild
+            DatabaseContext.DB.GuildConfigs.Remove(DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == guild.Id));
+
+            // Delete Birthdays for Guild
+            var birthdayList = DatabaseContext.DB.Birthdays.Where(x => x.GuildID == guild.Id).ToList();
+
+            foreach (var birthday in birthdayList)
+            {
+                DatabaseContext.DB.Birthdays.Remove(birthday);
+            }
+            // Process into DB
+            try
+            {
+                DatabaseContext.DB.SaveChanges();
+                Log.DebugDatabase("Guild: " + guild.Name + " / ID: " + guild.Id + " removed from Database.");
+            }
+            catch (Exception ex)
+            {
+                Log.ErrorDatabase("A Error Occured while removing Guild " + guild.Name + " / ID: " + guild.Id + " from Database.\n" + ex.ToString());
+            }
+        }
+
+        private async Task Client_ChannelDestroyed(SocketChannel channel)
+        {
+            var gConfig = DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.AnnounceChannelID == channel.Id);
+            if (gConfig != null)
+            {
+                SocketGuild guild = client.GetGuild(gConfig.GuildID);
+                gConfig.AnnounceChannelID = guild.SystemChannel.Id;
+                if (gConfig.ModRoleID != 0)
+                    await guild.SystemChannel.SendMessageAsync(guild.Owner.Mention + "\n" + guild.GetRole(gConfig.ModRoleID).Mention +
+                        "Der Nachrichten Channel wurde gelöscht. Ich werde die Geburtstage jetzt hier ankündigen.\n" +
+                        "Bitte nutze die /einstellungen um den Channel wieder zu ändern.");
+                else
+                    await guild.SystemChannel.SendMessageAsync(guild.Owner.Mention + "\n" +
+                        "Der Nachrichten Channel wurde gelöscht. Ich werde die Geburtstage jetzt hier ankündigen.\n" +
+                        "Bitte nutze die /einstellungen um den Channel wieder zu ändern.");
+            }
         }
 
         private async Task InteractionService_SlashCommandExecuted(SlashCommandInfo info, IInteractionContext context, IResult result)

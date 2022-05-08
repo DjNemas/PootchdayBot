@@ -74,14 +74,7 @@ namespace PootchdayBot
             DatabaseContext db = serviceProvider.GetRequiredService<DatabaseContext>();
             if (db.GuildConfigs?.FirstOrDefault(x => x.GuildID == guild.Id) == null)
             {
-                db.GuildConfigs.Add(new GuildConfig()
-                {
-                    GuildID = guild.Id,
-                    Ping = true,
-                    AnnounceChannelID = guild.SystemChannel.Id,
-                    CustomMessage = "",
-                    ModRoleID = 0
-                });
+                db.GuildConfigs.Add(new GuildConfig(guild.Id, guild.SystemChannel.Id, 0, "", true));
 
                 try
                 {
