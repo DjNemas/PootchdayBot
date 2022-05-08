@@ -111,7 +111,6 @@ namespace PootchdayBot
                 }
             }
         }
-
         Task APILog(LogMessage msg)
         {
             Log.DebugDiscord(msg.ToString());
