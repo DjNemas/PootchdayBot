@@ -43,7 +43,7 @@ namespace PootchdayBot.SlashCommands
             DatabaseContext.DB.Birthdays.Add(new Birthdays(Context.User.Id, Context.Guild.Id, Context.User.Username, dt));
             DatabaseContext.DB.SaveChanges();
 
-            await RespondAsync("Du wurdest eingetragen.");
+            await RespondAsync("Danke, dass du dich eingetragen hast!");
         }
 
         [SlashCommand("entferne", "[Jeder] Entferne dein B-Day eintrag von dem Server.")]
@@ -60,7 +60,7 @@ namespace PootchdayBot.SlashCommands
             DatabaseContext.DB.Birthdays.Remove(user);
             DatabaseContext.DB.SaveChanges();
 
-            await RespondAsync("Du wurdest auser der Datenbank entfernt.");
+            await RespondAsync("Du wurdest aus der Datenbank entfernt.");
         }
 
         [SlashCommand("letzte", "[Jeder] Zeigt Geburtstage der letzten 30 Tage an.")]
@@ -107,7 +107,7 @@ namespace PootchdayBot.SlashCommands
 
                 foreach (var birthdays in listBirthdays)
                 {
-                    message += $"{birthdays.GlobalUsername}";
+                    message += $"{birthdays.GlobalUsername} hat am {birthdays.Birthday.ToString("dd.MMMM")} Geburtstag.";
                 }
                 await RespondAsync(message);
             }
