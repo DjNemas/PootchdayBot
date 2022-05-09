@@ -93,10 +93,6 @@ namespace PootchdayBot
 
         private async Task Client_GuildAvailable(SocketGuild guild)
         {
-            foreach (var item in guild.Roles)
-            {
-                Console.WriteLine($"Name: {item.Name} Position: {item.Position} ID: {item.Id}");
-            }
             DatabaseContext db = serviceProvider.GetRequiredService<DatabaseContext>();
             if (db.GuildConfigs?.FirstOrDefault(x => x.GuildID == guild.Id) == null)
             {
