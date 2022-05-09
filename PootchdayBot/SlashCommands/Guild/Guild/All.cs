@@ -24,9 +24,9 @@ namespace PootchdayBot.SlashCommands
                 "Ihr mögt mich? Dann lasst doch gerne eine kleine Spende da und supportet mein Schöpfer bei weiteren Projekten. <3 https://paypal.me/djnemas");
         }
 
-        [SlashCommand("setze", "[Jeder] Trage dein Geburstag ein. (Das Jahr wird nur zur Ermittlung eines Schaltjahres genutzt!)")]
+        [SlashCommand("eintragen", "[Jeder] Trage dein Geburstag ein. (Jahr is Optional)")]
         [EnabledInDm(false)]
-        public async Task Setze(int tag, Monat monat, int? jahr = null)
+        public async Task Eintragen(int tag, Monat monat, int? jahr = null)
         {
             if(DatabaseContext.DB.Birthdays.FirstOrDefault(x => x.AccountID == Context.User.Id && x.GuildID == Context.Guild.Id) != null)
             {
@@ -58,7 +58,7 @@ namespace PootchdayBot.SlashCommands
             await RespondAsync("Danke, dass du dich eingetragen hast!");
         }
 
-        [SlashCommand("entferne", "[Jeder] Entferne dein B-Day eintrag von dem Server.")]
+        [SlashCommand("entferne", "[Jeder] Entferne dein B-Day Eintrag von dem Server.")]
         [EnabledInDm(false)]
         public async Task Entferne()
         {

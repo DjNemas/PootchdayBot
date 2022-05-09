@@ -22,7 +22,7 @@ namespace PootchdayBot
 
         private IServiceProvider serviceProvider;
 
-        private bool deleteAllGuildSlashCommands = false;
+        private bool deleteAllGuildSlashCommandsOnes = true;
 
         public DiscordInit()
         {
@@ -93,8 +93,11 @@ namespace PootchdayBot
         private async Task Client_Ready()
         {
             // Remove All Slash Commands from every Guild when bool is true
-            if (deleteAllGuildSlashCommands)
+            if (deleteAllGuildSlashCommandsOnes)
+            {
                 await DeleteAllGuildCommands();
+                deleteAllGuildSlashCommandsOnes = false;
+            }
         }
 
         private async Task DeleteAllGuildCommands()
