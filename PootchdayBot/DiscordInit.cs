@@ -54,6 +54,7 @@ namespace PootchdayBot
             client.Log += APILog;
             client.Connected += Client_Connected;
             client.GuildAvailable += Client_GuildAvailable;
+            client.RoleDeleted += Client_RoleDeleted;
 
             await client.SetGameAsync("/hilfe", type: ActivityType.Listening);
 
@@ -71,17 +72,35 @@ namespace PootchdayBot
 
         }
 
-        private Task Client_Connected1()
+        private async Task Client_RoleDeleted(SocketRole role)
         {
-            throw new NotImplementedException();
+            // Reset Birthday or Modrole in GuildConfig if role will be deleted
+            GuildConfig gConfig = DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == role.Guild.Id);
+            // ModRole
+            if (role.Id == gConfig.ModRoleID)
+            {
+                gConfig.ModRoleID = 0;
+                await DatabaseContext.DB.SaveChangesAsync();
+                Log.DebugDatabase($"ModRole for Guild {role.Guild.Name} with ID {role.Id} resseted");
+            }
+            if (role.Id == gConfig.BirthdayRoleID)
+            {
+                gConfig.BirthdayRoleID = 0;
+                await DatabaseContext.DB.SaveChangesAsync();
+                Log.DebugDatabase($"BirthdayRole for Guild {role.Guild.Name} with ID {role.Id} resseted");
+            }
         }
 
         private async Task Client_GuildAvailable(SocketGuild guild)
         {
+            foreach (var item in guild.Roles)
+            {
+                Console.WriteLine($"Name: {item.Name} Position: {item.Position} ID: {item.Id}");
+            }
             DatabaseContext db = serviceProvider.GetRequiredService<DatabaseContext>();
             if (db.GuildConfigs?.FirstOrDefault(x => x.GuildID == guild.Id) == null)
             {
-                db.GuildConfigs.Add(new GuildConfig(guild.Id, guild.SystemChannel.Id, 0, "", true));
+                db.GuildConfigs.Add(new GuildConfig(guild.Id, guild.DefaultChannel.Id));
 
                 try
                 {
@@ -89,7 +108,7 @@ namespace PootchdayBot
                     Log.DebugInteraction("New Guild Config in DB Created. Guild " + guild.Name + " ID: " + guild.Id);
                 }
                 catch (Exception ex)
-                { 
+                {
                     Log.ErrorDatabase("Error while creating Guild Config in DB. \n" + ex.ToString()); 
                 }
             }

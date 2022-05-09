@@ -1,6 +1,7 @@
 ﻿using PootchdayBot.Logging;
 using System.Xml;
 using PootchdayBot.Database;
+using PootchdayBot.Database.Models;
 
 namespace PootchdayBot.FolderManagment
 {
@@ -15,7 +16,8 @@ namespace PootchdayBot.FolderManagment
 
         private static void CreateDB()
         {
-            DatabaseContext.DB.Database.EnsureCreated();
+            
+            bool created = DatabaseContext.DB.Database.EnsureCreated();
             Log.DebugDiscord("DB Created or Loaded");
         }
 

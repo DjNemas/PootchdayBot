@@ -22,13 +22,36 @@ namespace PootchdayBot.SlashCommands
         [Group("einstellungen", "Hier kann eine Berechtigter User diverse Einstellungen vornehmen.")]
         public class EinstellungGroupModule : InteractionModuleBase
         {
-            [SlashCommand("channel", "[Admin/Mod] Gib den #Channel an, an dem die Geburtstagskinder erwähnt werden sollen.")]
+            [SlashCommand("channel", "[Admin/Mod] Gib den #Channel an, an dem die Geburtstage erwähnt werden sollen.")]
             public async Task Test(SocketGuildChannel channel)
             {
                 DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == Context.Guild.Id).AnnounceChannelID = channel.Id;
-                DatabaseContext.DB.SaveChanges();
+                await DatabaseContext.DB.SaveChangesAsync();
                 await RespondAsync($"Der Channel wurde auf <#{channel.Id}> geändert.");
                 
+            }
+
+            [Group("geburtstagsrolle", "Hier kann die @Geburtstagstolle eingestellt werden.")]
+            public class Geburtstagsrolle : InteractionModuleBase
+            {
+                [SlashCommand("erstelle", "[Admin/Mod] Erstelle eine @Geburtstagsrolle die an Geburtstagen vergeben wird.")]
+                public async Task Setze(string name)
+                {
+                    IRole role = Context.Guild.CreateRoleAsync(name, isHoisted: true, isMentionable: true).Result;
+                    DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == Context.Guild.Id).BirthdayRoleID = role.Id;
+                    await RespondAsync($"Die Geburtstagsrolle wurde erstellt und auf <@&{role.Id}> gesetzt.\n" +
+                        $"Du kannst in den Servereinstellungen noch die Farbe anpassen. :)");
+                }
+
+                [SlashCommand("entferne", "[Admin/Mod] Entferne die @GeburtstagsRolle aus den einstellungen.")]
+                public async Task Entferne()
+                {
+                    ulong currentRoleID = DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == Context.Guild.Id).BirthdayRoleID;
+                    await Context.Guild.GetRole(currentRoleID).DeleteAsync();
+                    DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == Context.Guild.Id).BirthdayRoleID = 0;
+                    await DatabaseContext.DB.SaveChangesAsync();
+                    await RespondAsync($"Die Geburtstagsrolle wurde entfernt.");
+                }
             }
 
             [Group("modrolle", "[Admin/Mod] Gib die @ModRolle an, die Berechtigt ist die [Admin/Mod] Befehle zu nutzen.")]
@@ -38,37 +61,37 @@ namespace PootchdayBot.SlashCommands
                 public async Task Setze(SocketRole role)
                 {
                     DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == Context.Guild.Id).ModRoleID = role.Id;
-                    DatabaseContext.DB.SaveChanges();
+                    await DatabaseContext.DB.SaveChangesAsync();
                     await RespondAsync($"Die ModRolle wurde auf <@&{role.Id}> gesetzt.");
                 }
 
-                [SlashCommand("entferne", "[Admin/Mod] Entferne die @ModRolle, die Berechtigt ist die [Admin/Mod] Befehle zu nutzen.")]
+                [SlashCommand("entferne", "[Admin/Mod] Entferne die @ModRolle aus den Einstellungen.")]
                 public async Task Entferne()
                 {
                     DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == Context.Guild.Id).ModRoleID = 0;
-                    DatabaseContext.DB.SaveChanges();
+                    await DatabaseContext.DB.SaveChangesAsync();
                     await RespondAsync($"Die ModRolle wurde entfernt.");
                 }
             }
 
-            [SlashCommand("nachricht", "[Admin/Mod] Gib an wie die Geburtstagskinder gegrüßt werden sollen.")]
+            [SlashCommand("nachricht", "[Admin/Mod] Gib an wie man zum Geburtstag gegrüßt werden sollen.")]
             public async Task Nachricht(string nachricht)
             {
                 DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == Context.Guild.Id).CustomMessage = nachricht;
-                DatabaseContext.DB.SaveChanges();
+                await DatabaseContext.DB.SaveChangesAsync();
                 await RespondAsync($"Die Nachricht wurde auf `{nachricht}` gesetzt.");
             }
 
-            [SlashCommand("ping", "[Admin/Mod] Stellt ein ob die Geburtstagskinder gepingt (@user) werden sollen oder nicht.")]
+            [SlashCommand("ping", "[Admin/Mod] Stellt ein ob die Benutzer zum Geburtstag gepingt (@user) werden sollen oder nicht.")]
             public async Task Nachricht([Choice("An", 1), Choice("Aus", 0)] int wähle)
             {
                 bool ping = Convert.ToBoolean(wähle);
                 DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == Context.Guild.Id).Ping = ping;
-                DatabaseContext.DB.SaveChanges();
+                await DatabaseContext.DB.SaveChangesAsync();
                 if (ping)
-                    await RespondAsync($"Die Geburtstagskinder werden nun gepingt.");
+                    await RespondAsync($"Die Benutzer werden am Geburtstags gepingt.");
                 else
-                    await RespondAsync($"Die Geburtstagskinder werden nicht gepingt.");
+                    await RespondAsync($"Die Benutzer werden am Geburtstag nicht gepingt.");
             }
 
             [SlashCommand("list", "[Admin/Mod] Zeigt die aktuellen Einstellungen vom Pootchday an.")]
@@ -128,7 +151,7 @@ namespace PootchdayBot.SlashCommands
                     gConfigCurrent.CustomMessage = gConfigBackup.CustomMessage;
                     gConfigCurrent.ModRoleID = gConfigBackup.ModRoleID;
                     gConfigCurrent.Ping = gConfigBackup.Ping;
-                    DatabaseContext.DB.SaveChanges();
+                    await DatabaseContext.DB.SaveChangesAsync();
                     await RespondAsync("Alle Einstellungen erfolgreich geladen! c:");
                     return;
                 }
@@ -170,7 +193,7 @@ namespace PootchdayBot.SlashCommands
                     }
                     if(success)
                     {
-                        DatabaseContext.DB.SaveChanges();
+                        await DatabaseContext.DB.SaveChangesAsync();
                         await RespondAsync("Alle Geburtstage erfolgreich geladen! c:");
                     }
                     else

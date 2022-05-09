@@ -33,22 +33,10 @@ namespace PootchdayBot.BirthdayFunctions
                     {
                         foreach (var birthday in DatabaseContext.DB.Birthdays)
                         {
-                            DateTime changeToThisYear;
+                            DateTime birthdayDate = ChangeToThisYear(birthday);
 
-                            // Ist Schlatjahr?
-                            if (birthday.Birthday.Month == 2 && birthday.Birthday.Day == 29)
-                            {
-                                if (DateTime.IsLeapYear(DateTime.Today.Year))
-                                    changeToThisYear = new DateTime(DateTime.Today.Year, birthday.Birthday.Month, birthday.Birthday.Day);
-                                else
-                                    changeToThisYear = new DateTime(DateTime.Today.Year, 3, 1);
-                            }
-                            else
-                            {
-                                changeToThisYear = new DateTime(DateTime.Today.Year, birthday.Birthday.Month, birthday.Birthday.Day);
-                            }
-
-                            if (changeToThisYear == DateTime.Today)
+                            // If Date is Today Fill Dictonary. Key = Guild ID
+                            if (birthdayDate == DateTime.Today)
                             {
                                 if (!listBirthdays.ContainsKey(birthday.GuildID))
                                 {
@@ -65,15 +53,20 @@ namespace PootchdayBot.BirthdayFunctions
                         foreach (var birthdayGuild in listBirthdays)
                         {
                             GuildConfig gConfig = DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == birthdayGuild.Key);
+                            // Remove Birthdayrole from last Birthdays
+                            await RemoveBirthdayRole(gConfig);
 
+                            // Create Message Header based on how much User have Birthday on current day.
                             string message = string.Empty;
                             if (listBirthdays.Count > 1)
                                 message = gConfig.CustomMessage == "" ? $"Heute haben gleich {listBirthdays.Count} Geburtstag! Alles Gute zum Geburtstag:\n" : gConfig.CustomMessage + "\n";
                             else
                                 message = gConfig.CustomMessage == "" ? "Heute hat eine User Geburtstag! Alles Gute zum Geburtstag:\n" : gConfig.CustomMessage + "\n";
 
+                            // Expand message with users birthday
                             foreach (var birthday in birthdayGuild.Value)
                             {
+                                await SetBirthdayRole(gConfig, birthday);
                                 if (gConfig.Ping)
                                     message += client.GetGuild(gConfig.GuildID).GetUser(birthday.AccountID).Mention + "\n";
                                 else
@@ -89,6 +82,48 @@ namespace PootchdayBot.BirthdayFunctions
                     }
                 }
             });
+        }
+
+        private async Task RemoveBirthdayRole(GuildConfig gConfig)
+        {
+            var list = client.GetGuild(gConfig.GuildID).Users;
+            foreach (var user in list)
+            {
+                foreach (var role in user.Roles)
+                {
+                    if(role.Id == gConfig.BirthdayRoleID)
+                        await user.RemoveRoleAsync(role);
+                }
+            }
+            Log.DebugInteraction("Birthdayrole on GuildID " + gConfig.GuildID + " resetet.");
+        }
+
+        private async Task SetBirthdayRole(GuildConfig gConfig, Birthdays birthday)
+        {
+            if (gConfig.BirthdayRoleID != 0)
+            {
+                SocketGuildUser user = client.GetGuild(birthday.GuildID).GetUser(birthday.AccountID);
+                await user.AddRoleAsync(gConfig.BirthdayRoleID);
+                Log.DebugInteraction("Birthdayrole for User: " + user.Username + " on Guild " + user.Guild.Name + " setted.");
+            }
+                
+        }
+        private DateTime ChangeToThisYear(Birthdays birthday)
+        {
+            DateTime changeToThisYear;
+            // Ist Schaltjahr?
+            if (birthday.Birthday.Month == 2 && birthday.Birthday.Day == 29)
+            {
+                if (DateTime.IsLeapYear(DateTime.Today.Year))
+                    changeToThisYear = new DateTime(DateTime.Today.Year, birthday.Birthday.Month, birthday.Birthday.Day);
+                else
+                    changeToThisYear = new DateTime(DateTime.Today.Year, 3, 1);
+            }
+            else
+            {
+                changeToThisYear = new DateTime(DateTime.Today.Year, birthday.Birthday.Month, birthday.Birthday.Day);
+            }
+            return changeToThisYear;
         }
     }
 }

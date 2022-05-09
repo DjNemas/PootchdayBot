@@ -19,6 +19,9 @@ namespace PootchdayBot.Database.Models
         [XmlElement(ElementName = "ModRoleID")]
         public ulong ModRoleID { get; set; }
 
+        [XmlElement(ElementName = "BirthdayRoleID")]
+        public ulong BirthdayRoleID { get; set; }
+
         [XmlElement(ElementName = "CustomMessage")]
         public string? CustomMessage { get; set; }
 
@@ -28,11 +31,12 @@ namespace PootchdayBot.Database.Models
         // For XML Serialisation
         private GuildConfig() { }
 
-        public GuildConfig(ulong guildID, ulong announceChannelID, ulong modRoleID, string customMessage, bool ping)
+        public GuildConfig(ulong guildID, ulong announceChannelID, ulong modRoleID = 0, ulong birthdayRoleID = 0, string customMessage = "", bool ping = true)
         {
             GuildID = guildID;
             AnnounceChannelID = announceChannelID;
             ModRoleID = modRoleID;
+            BirthdayRoleID = birthdayRoleID;
             CustomMessage = customMessage;
             Ping = ping;
         }

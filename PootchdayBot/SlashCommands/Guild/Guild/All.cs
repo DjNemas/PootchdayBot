@@ -54,7 +54,7 @@ namespace PootchdayBot.SlashCommands
             }
 
             DatabaseContext.DB.Birthdays.Add(new Birthdays(Context.User.Id, Context.Guild.Id, Context.User.Username, dt));
-            DatabaseContext.DB.SaveChanges();
+            await DatabaseContext.DB.SaveChangesAsync();
 
             await RespondAsync("Danke, dass du dich eingetragen hast!");
         }
@@ -72,7 +72,7 @@ namespace PootchdayBot.SlashCommands
             }
 
             DatabaseContext.DB.Birthdays.Remove(user);
-            DatabaseContext.DB.SaveChanges();
+            await DatabaseContext.DB.SaveChangesAsync();
 
             await RespondAsync("Du wurdest aus der Datenbank entfernt.");
         }
