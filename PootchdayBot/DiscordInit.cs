@@ -22,7 +22,7 @@ namespace PootchdayBot
 
         private IServiceProvider serviceProvider;
 
-        private bool deleteAllGuildSlashCommandsOnes = true;
+        private bool deleteAllGuildSlashCommands = false;
 
         public DiscordInit()
         {
@@ -52,7 +52,7 @@ namespace PootchdayBot
         {
 
             client.Log += APILog;
-            client.Ready += Client_Ready;
+            client.Connected += Client_Connected;
             client.GuildAvailable += Client_GuildAvailable;
 
             await client.SetGameAsync("/hilfe", type: ActivityType.Listening);
@@ -69,6 +69,11 @@ namespace PootchdayBot
             // Block this task until the program is closed.
             await Task.Delay(-1);
 
+        }
+
+        private Task Client_Connected1()
+        {
+            throw new NotImplementedException();
         }
 
         private async Task Client_GuildAvailable(SocketGuild guild)
@@ -90,14 +95,11 @@ namespace PootchdayBot
             }
         }
 
-        private async Task Client_Ready()
+        private async Task Client_Connected()
         {
             // Remove All Slash Commands from every Guild when bool is true
-            if (deleteAllGuildSlashCommandsOnes)
-            {
+            if (deleteAllGuildSlashCommands)
                 await DeleteAllGuildCommands();
-                deleteAllGuildSlashCommandsOnes = false;
-            }
         }
 
         private async Task DeleteAllGuildCommands()

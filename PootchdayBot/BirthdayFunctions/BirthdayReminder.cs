@@ -2,6 +2,7 @@
 using PootchdayBot.Database;
 using PootchdayBot.Database.Models;
 using PootchdayBot.Logging;
+using PootchdayBot.Tools;
 
 namespace PootchdayBot.BirthdayFunctions
 {
@@ -76,7 +77,7 @@ namespace PootchdayBot.BirthdayFunctions
                                 if (gConfig.Ping)
                                     message += client.GetGuild(gConfig.GuildID).GetUser(birthday.AccountID).Mention + "\n";
                                 else
-                                    message += birthday.GlobalUsername + "\n";
+                                    message += FormatString.HandleDiscordSpecialChar(birthday.GlobalUsername) + "\n";
 
                                 await client.GetGuild(birthdayGuild.Key).GetTextChannel(gConfig.AnnounceChannelID).SendMessageAsync(message);
                             }

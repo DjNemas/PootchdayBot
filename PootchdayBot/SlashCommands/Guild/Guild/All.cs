@@ -4,6 +4,7 @@ using PootchdayBot.Database.Models;
 using PootchdayBot.Database;
 using System.Globalization;
 using Discord;
+using PootchdayBot.Tools;
 
 namespace PootchdayBot.SlashCommands
 {
@@ -102,16 +103,23 @@ namespace PootchdayBot.SlashCommands
                 if (letzte)
                 {
                     if (userBirthday >= DateTime.Now.AddDays(-31) && userBirthday <= DateTime.Now)
+                    {
+                        birthdays.Birthday = new DateTime(10, birthdays.Birthday.Month, birthdays.Birthday.Day);
                         listBirthdays.Add(birthdays);
+                    }
                 }
                 else
                 {
                     if (userBirthday <= DateTime.Now.AddDays(30) && userBirthday >= DateTime.Now)
+                    {
+                        birthdays.Birthday = new DateTime(10, birthdays.Birthday.Month, birthdays.Birthday.Day);
                         listBirthdays.Add(birthdays);
+                    }
                 }
             }
             if (listBirthdays.Count > 0)
             {
+                listBirthdays.Sort((x, y) => x.Birthday.CompareTo(y.Birthday));
                 string message = string.Empty;
 
                 if (letzte)
@@ -122,12 +130,12 @@ namespace PootchdayBot.SlashCommands
                 if(letzte)
                     foreach (var birthdays in listBirthdays)
                     {
-                        message += $"{birthdays.GlobalUsername} hatte am {birthdays.Birthday.ToString("dd. MMMM", new CultureInfo("de-DE"))} Geburtstag. <:kagoparty:859338304171016202> \n";
+                        message += $"{FormatString.HandleDiscordSpecialChar(birthdays.GlobalUsername)} hatte am {birthdays.Birthday.ToString("dd. MMMM", new CultureInfo("de-DE"))} Geburtstag. <:kagoparty:859338304171016202> \n";
                     }
                 else
                     foreach (var birthdays in listBirthdays)
                     {
-                        message += $"{birthdays.GlobalUsername} hat am {birthdays.Birthday.ToString("dd. MMMM", new CultureInfo("de-DE"))} Geburtstag. <:kagoparty:859338304171016202> \n";
+                        message += $"{FormatString.HandleDiscordSpecialChar(birthdays.GlobalUsername)} hat am {birthdays.Birthday.ToString("dd. MMMM", new CultureInfo("de-DE"))} Geburtstag. <:kagoparty:859338304171016202> \n";
                     }
                 await RespondAsync(message);
             }
