@@ -122,12 +122,12 @@ namespace PootchdayBot.SlashCommands
                 if(letzte)
                     foreach (var birthdays in listBirthdays)
                     {
-                        message += $"{birthdays.GlobalUsername} hatte am {birthdays.Birthday.ToString("dd. MMMM", new CultureInfo("de-DE"))} Geburtstag. <:kagoparty:859338304171016202>";
+                        message += $"{birthdays.GlobalUsername} hatte am {birthdays.Birthday.ToString("dd. MMMM", new CultureInfo("de-DE"))} Geburtstag. <:kagoparty:859338304171016202> \n";
                     }
                 else
                     foreach (var birthdays in listBirthdays)
                     {
-                        message += $"{birthdays.GlobalUsername} hat am {birthdays.Birthday.ToString("dd. MMMM", new CultureInfo("de-DE"))} Geburtstag. <:kagoparty:859338304171016202>";
+                        message += $"{birthdays.GlobalUsername} hat am {birthdays.Birthday.ToString("dd. MMMM", new CultureInfo("de-DE"))} Geburtstag. <:kagoparty:859338304171016202> \n";
                     }
                 await RespondAsync(message);
             }
