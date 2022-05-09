@@ -2,7 +2,7 @@
 Geburtstags Bot für Discord auf Deutsch!
 Der Bot wurde komplett mit den neuen / Slashbefehlen entwickelt.
 
-Inv Link: https://discord.com/api/oauth2/authorize?client_id=972494503665618954&permissions=139586735104&scope=bot%20applications.commands
+Einlade Link: https://discord.com/api/oauth2/authorize?client_id=972494503665618954&permissions=139586735104&scope=bot%20applications.commands
 
 ## Was kann der Bot?
 - Mit diesem Bot können Benutzer Ihren Geburtstag eintragen und werden an Ihrem Geburtstag erwähnt.
