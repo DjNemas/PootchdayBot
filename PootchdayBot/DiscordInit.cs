@@ -55,6 +55,8 @@ namespace PootchdayBot
             client.Ready += Client_Ready;
             client.GuildAvailable += Client_GuildAvailable;
 
+            await client.SetGameAsync("/hilfe", type: ActivityType.Listening);
+
             interaction = serviceProvider.GetRequiredService<Interaction>();
             await interaction.InstallInteractionServiceAsync();
 

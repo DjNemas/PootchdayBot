@@ -139,17 +139,35 @@ namespace PootchdayBot.SlashCommands
                     await RespondAsync("Es gibt keine Geburtstage in den nächsten 30 Tagen.");
             }
         }
-
-        [SlashCommand("help", "[Jeder] Ich schicke dir eine Nachricht die dir helfen sollte. :P")]
+        
+        [SlashCommand("hilfe", "[Jeder] Ich schicke dir eine Nachricht die dir helfen sollte. :P")]
         [EnabledInDm(true)]
-        public async Task Help()
+        public async Task Hilfe()
         {
             var dmChannel = Context.User.CreateDMChannelAsync().Result;
-            await dmChannel.SendMessageAsync("Du findest alle Befehle des Bots im für den Bot aktivierten Channel auf einem Server.\n\n" +
-                "Für die Admins/Mods:\n" +
-                "Mit den /einstellungs Slashbefehlen könnt Ihr den Bot konfigurieren.");
+
+            ulong modID = DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == Context.Guild.Id).ModRoleID;
+            if (Context.User.Id == Context.Guild.OwnerId || Context.Guild.GetUserAsync(Context.User.Id).Result.RoleIds.Contains(modID))
+            {
+                List<FileAttachment> files = new List<FileAttachment>();
+                files.Add(new FileAttachment(new FileStream("./HelpImages/helpimage1.png", FileMode.Open), "helpimage1.png", "Bild1"));
+                files.Add(new FileAttachment(new FileStream("./HelpImages/helpimage2.png", FileMode.Open), "helpimage2.png", "Bild2"));
+                files.Add(new FileAttachment(new FileStream("./HelpImages/helpimage3.png", FileMode.Open), "helpimage3.png", "Bild3"));
+                files.Add(new FileAttachment(new FileStream("./HelpImages/helpimage4.png", FileMode.Open), "helpimage4.png", "Bild4"));
+
+                await dmChannel.SendFilesAsync(files, "Du findest alle Befehle des Bots, im für den Bot aktivierten Kanal, auf einem Server mit Beschreibung.\n\n" +
+                "Du kannst mit den /einstellung Slashbefehlen den Bot nach belieben Konfigurieren. (siehe erstes Bild)\n" +
+                "Wenn du einstellen möchtest in welchem Channel und mit welchen Rollen der Bot genutzt werden darf, kannst du dies in den Servereinstellungen->Intergration einstellen. (siehe zweites Bild)\n" +
+                "Du kannst natürlich auch ganz übertreiben und jeglichen Slashbefehl individuell einstellen. x) Dies geht ebenfalls über die Servereinstellungen->Intergration. (siehe drittes/viertes Bild)");
+            }
+            else
+            {
+                FileAttachment file = new FileAttachment(new FileStream("./HelpImages/helpimageeveryone1.png", FileMode.Open), "helpimageeveryone1.png", "Bild1");
+                await dmChannel.SendFileAsync(file, "Du findest alle Befehle des Bots, im für den Bot aktivierten Kanal, auf einem Server mit Beschreibung. (siehe Bild)");
+            }
             await RespondAsync("meow");
             await DeleteOriginalResponseAsync();
+        
         }
     }
 
