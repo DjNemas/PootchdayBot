@@ -146,15 +146,6 @@ namespace PootchdayBot.Services
             }
         }
 
-        private async Task Client_JoinedGuild(SocketGuild guild)
-        {
-            await guild.Owner.CreateDMChannelAsync().Result.SendMessageAsync(
-                "Danke dass du mich Eingeladen hast!\n" +
-                "Ab Sofort werde ich für dich die Geburstage managen. OwO\n\n" +
-                "`- Bitte stelle sicher dass alle User eine Rolle haben mit der Users Slashcommands im Textchannel nutzen dürfen.\n" +
-                "- Du kannst außerdem in den Servereinstellungen->Intergration->Verwalten (Bot Pootchday) einstellen in welchen Channels der Bot genutzt werden darf.`");
-        }
-
         private async Task Client_GuildAvailable(SocketGuild guild)
         {
             Log.DebugInteraction("Register Commands for Guild: " + guild.Name + " ID: " + guild.Id, true);
