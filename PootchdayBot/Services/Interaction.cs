@@ -34,8 +34,6 @@ namespace PootchdayBot.Services
 
             client.InteractionCreated += Client_InteractionCreated;
 
-            client.JoinedGuild += Client_JoinedGuild;
-
             client.ChannelDestroyed += Client_ChannelDestroyed;
 
             client.LeftGuild += Client_LeftGuild;
