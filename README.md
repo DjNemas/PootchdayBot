@@ -1,4 +1,4 @@
-# PootchdayBot
+# Pootchday
 Geburtstags Bot für Discord auf Deutsch!
 Der Bot wurde komplett mit den neuen / Slashbefehlen entwickelt.
 
