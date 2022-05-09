@@ -17,6 +17,7 @@ namespace PootchdayBot.SlashCommands
     public class Admin : InteractionModuleBase
     {
         [RequirePootchdayModRole()]
+        [EnabledInDm(false)]
         [Group("einstellungen", "Hier kann eine Berechtigter User diverse einstellungen vornehmen.")]
         public class EinstellungGroupModule : InteractionModuleBase
         {
@@ -86,6 +87,7 @@ namespace PootchdayBot.SlashCommands
         }
 
         [RequirePootchdayModRole()]
+        [EnabledInDm(false)]
         [SlashCommand("backup", "[Admin/Mod] Erstelle ein Backup der Einstellungen und Geburtstage.")]
         public async Task Backup()
         {
@@ -95,6 +97,7 @@ namespace PootchdayBot.SlashCommands
         }
 
         [RequirePootchdayModRole()]
+        [EnabledInDm(false)]
         [SlashCommand("import", "[Admin/Mod] Importiere zuvor erstellte Backups.")]
         public async Task Import(IAttachment file)
         {

@@ -9,6 +9,7 @@ namespace PootchdayBot.SlashCommands
     public class All : InteractionModuleBase
     {
         [SlashCommand("info", "[Jeder] Info über diesen Bot")]
+        [EnabledInDm(true)]
         public async Task Info()
         {
             SocketGuildUser nemas = Context.Guild.GetUsersAsync().Result.FirstOrDefault(x => x.Id == 123613862237831168) as SocketGuildUser;
@@ -22,6 +23,7 @@ namespace PootchdayBot.SlashCommands
         }
 
         [SlashCommand("setze", "[Jeder] Trage dein Geburstag ein. (Das Jahr wird nur zur Ermittlung eines Schaltjahres genutzt!)")]
+        [EnabledInDm(false)]
         public async Task Setze(int tag, Monat monat, int? jahr = null)
         {
             if(DatabaseContext.DB.Birthdays.FirstOrDefault(x => x.AccountID == Context.User.Id && x.GuildID == Context.Guild.Id) != null)
@@ -55,6 +57,7 @@ namespace PootchdayBot.SlashCommands
         }
 
         [SlashCommand("entferne", "[Jeder] Entferne dein B-Day eintrag von dem Server.")]
+        [EnabledInDm(false)]
         public async Task Entferne()
         {
             var user = DatabaseContext.DB.Birthdays.FirstOrDefault(x => x.AccountID == Context.User.Id && x.GuildID == Context.Guild.Id);
@@ -72,12 +75,14 @@ namespace PootchdayBot.SlashCommands
         }
 
         [SlashCommand("letzte", "[Jeder] Zeigt Geburtstage der letzten 30 Tage an.")]
+        [EnabledInDm(false)]
         public async Task Letze()
         {
             await ErmittleLetzteKommendeGeburtstage(true);
         }
 
         [SlashCommand("kommende", "[Jeder] Zeigt Geburtstage der nächsten 30 Tage an.")]
+        [EnabledInDm(false)]
         public async Task Kommende()
         {
             await ErmittleLetzteKommendeGeburtstage(false);
@@ -134,6 +139,7 @@ namespace PootchdayBot.SlashCommands
         }
 
         [SlashCommand("help", "[Jeder] Ich schicke dir eine Nachricht die dir helfen sollte. :P")]
+        [EnabledInDm(true)]
         public async Task Help()
         {
             var dmChannel = Context.User.CreateDMChannelAsync().Result;
