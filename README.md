@@ -18,3 +18,5 @@ Und einiges mehr. Schaut euch dafür einfach die Slashbefehle an.
 # Wie bekomme ich Hilfe?
 Sobald Ihr den Bot auf euren Server eingeladen habt, könnt Ihr mit /hilfe euch eine bebilderte Hilfe zukommen lassen.
 Server Owner, oder falls die ModRolle eingestellt wurde, bekommen zusätzliche Hilfe für Servereinstellungen.
+
+![Übersichtbild](./PootchdayBot/HelpImages/previewimagegithubg.png)
