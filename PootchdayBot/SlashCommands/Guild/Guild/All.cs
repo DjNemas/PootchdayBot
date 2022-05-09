@@ -3,9 +3,11 @@ using Discord.WebSocket;
 using PootchdayBot.Database.Models;
 using PootchdayBot.Database;
 using System.Globalization;
+using Discord;
 
 namespace PootchdayBot.SlashCommands
 {
+    [DefaultMemberPermissions(GuildPermission.UseApplicationCommands)]
     public class All : InteractionModuleBase
     {
         [SlashCommand("info", "[Jeder] Info über diesen Bot")]

@@ -14,11 +14,12 @@ using System.Xml.Serialization;
 
 namespace PootchdayBot.SlashCommands
 {
+    [DefaultMemberPermissions(GuildPermission.UseApplicationCommands)]
     public class Admin : InteractionModuleBase
     {
         [RequirePootchdayModRole()]
         [EnabledInDm(false)]
-        [Group("einstellungen", "Hier kann eine Berechtigter User diverse einstellungen vornehmen.")]
+        [Group("einstellungen", "Hier kann eine Berechtigter User diverse Einstellungen vornehmen.")]
         public class EinstellungGroupModule : InteractionModuleBase
         {
             [SlashCommand("channel", "[Admin/Mod] Gib den #Channel an, an dem die Geburtstagskinder erwähnt werden sollen.")]
