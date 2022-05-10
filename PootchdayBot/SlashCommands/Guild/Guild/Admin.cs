@@ -34,7 +34,7 @@ namespace PootchdayBot.SlashCommands
             [Group("geburtstagsrolle", "Hier kann die @Geburtstagstolle eingestellt werden.")]
             public class Geburtstagsrolle : InteractionModuleBase
             {
-                [SlashCommand("erstelle", "[Admin/Mod] Erstelle eine @Geburtstagsrolle die an Geburtstagen vergeben wird.")]
+                [SlashCommand("erstellen", "[Admin/Mod] Erstelle eine @Geburtstagsrolle die an Geburtstagen vergeben wird.")]
                 public async Task Setze(string name)
                 {
                     IRole role = Context.Guild.CreateRoleAsync(name, isHoisted: true, isMentionable: true).Result;
