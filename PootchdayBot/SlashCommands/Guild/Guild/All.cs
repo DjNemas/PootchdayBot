@@ -29,7 +29,7 @@ namespace PootchdayBot.SlashCommands
         [EnabledInDm(false)]
         public async Task Eintragen(int tag, Monat monat, int? jahr = null)
         {
-            if(DatabaseContext.DB.Birthdays.FirstOrDefault(x => x.AccountID == Context.User.Id && x.GuildID == Context.Guild.Id) != null)
+            if (DatabaseContext.DB.Birthdays.FirstOrDefault(x => x.AccountID == Context.User.Id && x.GuildID == Context.Guild.Id) != null)
             {
                 await RespondAsync("Du bist bereits eingetragen.");
                 return;
@@ -192,6 +192,30 @@ namespace PootchdayBot.SlashCommands
         September = 9,
         Oktober = 10,
         Novermber = 11,
-        Dezember = 12
+        Dezember = 12,
+        [ChoiceDisplay("1")]
+        One = 1,
+        [ChoiceDisplay("2")]
+        Two = 2,
+        [ChoiceDisplay("3")]
+        Three = 3,
+        [ChoiceDisplay("4")]
+        Four = 4,
+        [ChoiceDisplay("5")]
+        Five = 5,
+        [ChoiceDisplay("6")]
+        Six = 6,
+        [ChoiceDisplay("7")]
+        Seven = 7,
+        [ChoiceDisplay("8")]
+        Eight = 8,
+        [ChoiceDisplay("9")]
+        Nine = 9,
+        [ChoiceDisplay("10")]
+        Ten = 10,
+        [ChoiceDisplay("11")]
+        Eleven = 11,
+        [ChoiceDisplay("12")]
+        Twelve = 12,
     }
 }
