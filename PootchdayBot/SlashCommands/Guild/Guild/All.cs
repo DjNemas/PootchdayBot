@@ -5,6 +5,7 @@ using PootchdayBot.Database;
 using System.Globalization;
 using Discord;
 using PootchdayBot.Tools;
+using System.Text;
 
 namespace PootchdayBot.SlashCommands
 {
@@ -75,6 +76,39 @@ namespace PootchdayBot.SlashCommands
             await DatabaseContext.DB.SaveChangesAsync();
 
             await RespondAsync("Du wurdest aus der Datenbank entfernt.");
+        }
+
+        [SlashCommand("alle", "[Jeder] Zeigt alle eingetragenen Geburtstage an.")]
+        [EnabledInDm(false)]
+        public async Task Alle()
+        {
+            List<Birthdays> listBirthdays = DatabaseContext.DB.Birthdays.Where(x => x.GuildID == Context.Guild.Id).ToList();
+            // Set Every Yeah to 10 for Oder List
+            foreach (var birthday in listBirthdays)
+            {
+                birthday.Birthday = new DateTime(10, birthday.Birthday.Month, birthday.Birthday.Day);
+            }
+            listBirthdays.Sort((x, y) =>  x.Birthday.CompareTo(y.Birthday));
+
+            string message = "";
+            List<string> listMessages = new List<string>();
+            foreach (var birthday in listBirthdays)
+            {
+                string temp = $"{birthday.GlobalUsername} {birthday.Birthday.ToString("dd. MMMM")}\n";
+                if ((message.Length + temp.Length) <= 2000)
+                    message += temp;
+                else
+                {
+                    listMessages.Add(message);
+                    message = temp;
+                }
+            }
+            listMessages.Add(message);
+            await RespondAsync(listMessages[0]);
+            for (int i = 1; i < listMessages.Count; i++)
+            {
+                await FollowupAsync(listMessages[i]);
+            }
         }
 
         [SlashCommand("letzte", "[Jeder] Zeigt Geburtstage der letzten 30 Tage an.")]
