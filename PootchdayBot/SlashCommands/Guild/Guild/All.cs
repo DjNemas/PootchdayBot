@@ -92,9 +92,10 @@ namespace PootchdayBot.SlashCommands
 
             string message = "";
             List<string> listMessages = new List<string>();
+            CultureInfo ci = new CultureInfo("de-DE");
             foreach (var birthday in listBirthdays)
             {
-                string temp = $"{birthday.GlobalUsername} {birthday.Birthday.ToString("dd. MMMM")}\n";
+                string temp = $"{FormatString.HandleDiscordSpecialChar(birthday.GlobalUsername)} {birthday.Birthday.ToString("dd. MMMM", ci)}\n";
                 if ((message.Length + temp.Length) <= 2000)
                     message += temp;
                 else
