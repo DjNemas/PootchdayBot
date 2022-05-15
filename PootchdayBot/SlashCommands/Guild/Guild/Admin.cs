@@ -281,9 +281,11 @@ namespace PootchdayBot.SlashCommands
                             Log.DebugInteraction("Beim entferne der Birthdayrolle ist ein Fehler Aufgetretten.\n" +
                                 "DiscordServer: " + Context.Guild.Name + " ID: " + Context.Guild.Id + "\n" +
                                 ex);
+                            await Context.User.CreateDMChannelAsync().Result.SendMessageAsync("Beim entferne der Birthdayrolle ist ein Fehler Aufgetretten.\n" +
+                                "Falls du mit dem Fehler nichts anfangen kannst, kontaktiere bitte den Entwickler oder Frage jemanden der sich mit Programmieren auskennt in deiner Community." +
+                                "```" + ex + "```");
                         }
                     }
-
                 }
             }
             Log.DebugInteraction("Birthdayrole on GuildID " + gConfig.GuildID + " resetet.");
@@ -302,6 +304,9 @@ namespace PootchdayBot.SlashCommands
                     Log.DebugInteraction("Beim setzen der Birthdayrolle ist ein Fehler Aufgetretten.\n" +
                         "DiscordServer: " + Context.Guild.Name + " ID: " + Context.Guild.Id + "\n" +
                         ex);
+                    await Context.User.CreateDMChannelAsync().Result.SendMessageAsync("Beim setzen der Birthdayrolle ist ein Fehler Aufgetretten.\n" +
+                                "Falls du mit dem Fehler nichts anfangen kannst, kontaktiere bitte den Entwickler oder Frage jemanden der sich mit Programmieren auskennt in deiner Community." +
+                                "```" + ex + "```");
                 }
                 Log.DebugInteraction("Birthdayrole for User: " + user.Username + " on Guild " + user.Guild.Name + " setted.");
             }
