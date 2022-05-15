@@ -238,11 +238,13 @@ namespace PootchdayBot.SlashCommands
 
                 if (birthday.Birthday == DateTime.Today)
                 {
-                    await SetBirthdayRole(gConfig, birthday);
+                    IGuildUser user = Context.Guild.GetUserAsync(birthday.AccountID).Result
+                    
+                    await SetBirthdayRole(gConfig, birthday, user);
                     
                     string message = string.Empty;
                     if (gConfig.Ping)
-                        message += Context.Guild.GetUserAsync(birthday.AccountID).Result.Mention + "\n";
+                        message += user.Mention + "\n";
                     else
                         message += FormatString.HandleDiscordSpecialChar(birthday.GlobalUsername) + "\n";
                     try
@@ -257,6 +259,8 @@ namespace PootchdayBot.SlashCommands
                     }
                 }
             }
+            await RespondAsync("meow");
+            await DeleteOriginalResponseAsync();
         }
 
         private async Task RemoveBirthdayRole(GuildConfig gConfig)
@@ -285,11 +289,10 @@ namespace PootchdayBot.SlashCommands
             Log.DebugInteraction("Birthdayrole on GuildID " + gConfig.GuildID + " resetet.");
         }
 
-        private async Task SetBirthdayRole(GuildConfig gConfig, Birthdays birthday)
+        private async Task SetBirthdayRole(GuildConfig gConfig, Birthdays birthday, IGuildUser user)
         {
             if (gConfig.BirthdayRoleID != 0)
             {
-                var user = await Context.Guild.GetUserAsync(birthday.AccountID);
                 try
                 {
                     await user.AddRoleAsync(gConfig.BirthdayRoleID);
@@ -302,7 +305,6 @@ namespace PootchdayBot.SlashCommands
                 }
                 Log.DebugInteraction("Birthdayrole for User: " + user.Username + " on Guild " + user.Guild.Name + " setted.");
             }
-
         }
     }
 }
