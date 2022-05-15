@@ -54,7 +54,16 @@ namespace PootchdayBot.BirthdayFunctions
                         {
                             GuildConfig gConfig = DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == birthdayGuild.Key);
                             // Remove Birthdayrole from last Birthdays
-                            await RemoveBirthdayRole(gConfig);
+                            try
+                            {
+                                await RemoveBirthdayRole(gConfig);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.DebugInteraction("Beim entferne der Birthdayrolle ist ein Fehler Aufgetretten.\n" +
+                                    "DiscordServer: " + client.GetGuild(birthdayGuild.Key).Name + " ID: " + birthdayGuild.Key + "\n" +
+                                    ex);
+                            }
 
                             // Create Message Header based on how much User have Birthday on current day.
                             string message = string.Empty;
@@ -66,13 +75,32 @@ namespace PootchdayBot.BirthdayFunctions
                             // Expand message with users birthday
                             foreach (var birthday in birthdayGuild.Value)
                             {
-                                await SetBirthdayRole(gConfig, birthday);
+                                try
+                                {
+                                    await SetBirthdayRole(gConfig, birthday);
+                                }
+                                
+                                catch (Exception ex)
+                                {
+                                    Log.DebugInteraction("Beim setzen der Birthdayrolle ist ein Fehler Aufgetretten.\n" +
+                                        "DiscordServer: " + client.GetGuild(birthdayGuild.Key).Name + " ID: " + birthdayGuild.Key + "\n" +
+                                        ex);
+                                }
+
                                 if (gConfig.Ping)
                                     message += client.GetGuild(gConfig.GuildID).GetUser(birthday.AccountID).Mention + "\n";
                                 else
                                     message += FormatString.HandleDiscordSpecialChar(birthday.GlobalUsername) + "\n";
-
-                                await client.GetGuild(birthdayGuild.Key).GetTextChannel(gConfig.AnnounceChannelID).SendMessageAsync(message);
+                                try
+                                {
+                                    await client.GetGuild(birthdayGuild.Key).GetTextChannel(gConfig.AnnounceChannelID).SendMessageAsync(message);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.DebugInteraction("Beim erwähnen der Geburtstagsperson ist ein Fehler Aufgetretten.\n" +
+                                        "DiscordServer: " + client.GetGuild(birthdayGuild.Key).Name + " ID: " + birthdayGuild.Key + "\n" +
+                                        ex);
+                                }
                             }
                         }
                     }
