@@ -54,16 +54,8 @@ namespace PootchdayBot.BirthdayFunctions
                         {
                             GuildConfig gConfig = DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == birthdayGuild.Key);
                             // Remove Birthdayrole from last Birthdays
-                            try
-                            {
-                                await RemoveBirthdayRole(gConfig);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.DebugInteraction("Beim entferne der Birthdayrolle ist ein Fehler Aufgetretten.\n" +
-                                    "DiscordServer: " + client.GetGuild(birthdayGuild.Key).Name + " ID: " + birthdayGuild.Key + "\n" +
-                                    ex);
-                            }
+
+                            await RemoveBirthdayRole(gConfig);
 
                             // Create Message Header based on how much User have Birthday on current day.
                             string message = string.Empty;
@@ -75,17 +67,7 @@ namespace PootchdayBot.BirthdayFunctions
                             // Expand message with users birthday
                             foreach (var birthday in birthdayGuild.Value)
                             {
-                                try
-                                {
-                                    await SetBirthdayRole(gConfig, birthday);
-                                }
-                                
-                                catch (Exception ex)
-                                {
-                                    Log.DebugInteraction("Beim setzen der Birthdayrolle ist ein Fehler Aufgetretten.\n" +
-                                        "DiscordServer: " + client.GetGuild(birthdayGuild.Key).Name + " ID: " + birthdayGuild.Key + "\n" +
-                                        ex);
-                                }
+                                await SetBirthdayRole(gConfig, birthday);
 
                                 if (gConfig.Ping)
                                     message += client.GetGuild(gConfig.GuildID).GetUser(birthday.AccountID).Mention + "\n";
@@ -120,7 +102,19 @@ namespace PootchdayBot.BirthdayFunctions
                 foreach (var role in user.Roles)
                 {
                     if(role.Id == gConfig.BirthdayRoleID)
-                        await user.RemoveRoleAsync(role);
+                    {
+                        try
+                        {
+                            await user.RemoveRoleAsync(role);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.DebugInteraction("Beim entferne der Birthdayrolle ist ein Fehler Aufgetretten.\n" +
+                                "DiscordServer: " + client.GetGuild(gConfig.GuildID).Name + " ID: " + gConfig.GuildID + "\n" +
+                                ex);
+                        }
+                    }
+                        
                 }
             }
             Log.DebugInteraction("Birthdayrole on GuildID " + gConfig.GuildID + " resetet.");
@@ -131,7 +125,16 @@ namespace PootchdayBot.BirthdayFunctions
             if (gConfig.BirthdayRoleID != 0)
             {
                 SocketGuildUser user = client.GetGuild(birthday.GuildID).GetUser(birthday.AccountID);
-                await user.AddRoleAsync(gConfig.BirthdayRoleID);
+                try
+                {
+                    await user.AddRoleAsync(gConfig.BirthdayRoleID);
+                }
+                catch (Exception ex)
+                {
+                    Log.DebugInteraction("Beim setzen der Birthdayrolle ist ein Fehler Aufgetretten.\n" +
+                        "DiscordServer: " + client.GetGuild(gConfig.GuildID).Name + " ID: " + gConfig.GuildID + "\n" +
+                        ex);
+                }
                 Log.DebugInteraction("Birthdayrole for User: " + user.Username + " on Guild " + user.Guild.Name + " setted.");
             }
                 

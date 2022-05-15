@@ -28,7 +28,7 @@ namespace PootchdayBot.SlashCommands
                 DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == Context.Guild.Id).AnnounceChannelID = channel.Id;
                 await DatabaseContext.DB.SaveChangesAsync();
                 await RespondAsync($"Der Channel wurde auf <#{channel.Id}> geändert.");
-                
+
             }
 
             [Group("geburtstagsrolle", "Hier kann die @Geburtstagstolle eingestellt werden.")]
@@ -191,7 +191,7 @@ namespace PootchdayBot.SlashCommands
                             break;
                         }
                     }
-                    if(success)
+                    if (success)
                     {
                         await DatabaseContext.DB.SaveChangesAsync();
                         await RespondAsync("Alle Geburtstage erfolgreich geladen! c:");
@@ -209,6 +209,100 @@ namespace PootchdayBot.SlashCommands
 
             await RespondAsync("Es wurde nicht die richtige Backupdatei mitgeschickt.\n" +
                 $"Bitte nutze die Original unveränderten Backupdatei!");
+        }
+
+        [RequirePootchdayModRole()]
+        [EnabledInDm(false)]
+        [SlashCommand("postegeburtstage", "[Admin/Mod] Lass vom Bot die Geburtstage posten. Nur im Notfall nutzen!")]
+        public async Task PosteGeburtstage()
+        {
+            GuildConfig gConfig = DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == Context.Guild.Id);
+            List<Birthdays> birthdays = DatabaseContext.DB.Birthdays.Where(x => x.GuildID == Context.Guild.Id).ToList();
+
+            await RemoveBirthdayRole(gConfig);
+
+            foreach (var birthday in birthdays)
+            {
+                birthday.Birthday = new DateTime(DateTime.Now.Year, birthday.Birthday.Month, birthday.Birthday.Day);
+
+                // Schaltjahr?
+                if (birthday.Birthday.Month == 2 && birthday.Birthday.Day == 29)
+                {
+                    if (DateTime.IsLeapYear(DateTime.Today.Year))
+                        birthday.Birthday = new DateTime(DateTime.Today.Year, birthday.Birthday.Month, birthday.Birthday.Day);
+                    else
+                        birthday.Birthday = new DateTime(DateTime.Today.Year, 3, 1);
+                }
+                else
+                    birthday.Birthday = new DateTime(DateTime.Today.Year, birthday.Birthday.Month, birthday.Birthday.Day);
+
+                if (birthday.Birthday == DateTime.Today)
+                {
+                    await SetBirthdayRole(gConfig, birthday);
+                    
+                    string message = string.Empty;
+                    if (gConfig.Ping)
+                        message += Context.Guild.GetUserAsync(birthday.AccountID).Result.Mention + "\n";
+                    else
+                        message += FormatString.HandleDiscordSpecialChar(birthday.GlobalUsername) + "\n";
+                    try
+                    {
+                        await Context.Guild.GetTextChannelAsync(gConfig.AnnounceChannelID).Result.SendMessageAsync(message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.DebugInteraction("Beim erwähnen der Geburtstagsperson ist ein Fehler Aufgetretten.\n" +
+                            "DiscordServer: " + Context.Guild.Name + " ID: " + Context.Guild.Id + "\n" +
+                            ex);
+                    }
+                }
+            }
+        }
+
+        private async Task RemoveBirthdayRole(GuildConfig gConfig)
+        {
+            var guildUsers = await Context.Guild.GetUsersAsync();
+            foreach (var user in guildUsers)
+            {
+                foreach (var id in user.RoleIds)
+                {
+                    if (id == gConfig.BirthdayRoleID)
+                    {
+                        try
+                        {
+                            await user.RemoveRoleAsync(id);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.DebugInteraction("Beim entferne der Birthdayrolle ist ein Fehler Aufgetretten.\n" +
+                                "DiscordServer: " + Context.Guild.Name + " ID: " + Context.Guild.Id + "\n" +
+                                ex);
+                        }
+                    }
+
+                }
+            }
+            Log.DebugInteraction("Birthdayrole on GuildID " + gConfig.GuildID + " resetet.");
+        }
+
+        private async Task SetBirthdayRole(GuildConfig gConfig, Birthdays birthday)
+        {
+            if (gConfig.BirthdayRoleID != 0)
+            {
+                var user = await Context.Guild.GetUserAsync(birthday.AccountID);
+                try
+                {
+                    await user.AddRoleAsync(gConfig.BirthdayRoleID);
+                }
+                catch (Exception ex)
+                {
+                    Log.DebugInteraction("Beim setzen der Birthdayrolle ist ein Fehler Aufgetretten.\n" +
+                        "DiscordServer: " + Context.Guild.Name + " ID: " + Context.Guild.Id + "\n" +
+                        ex);
+                }
+                Log.DebugInteraction("Birthdayrole for User: " + user.Username + " on Guild " + user.Guild.Name + " setted.");
+            }
+
         }
     }
 }
