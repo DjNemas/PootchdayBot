@@ -238,7 +238,7 @@ namespace PootchdayBot.SlashCommands
 
                 if (birthday.Birthday == DateTime.Today)
                 {
-                    IGuildUser user = Context.Guild.GetUserAsync(birthday.AccountID).Result
+                    IGuildUser user = Context.Guild.GetUserAsync(birthday.AccountID).Result;
                     
                     await SetBirthdayRole(gConfig, birthday, user);
                     
