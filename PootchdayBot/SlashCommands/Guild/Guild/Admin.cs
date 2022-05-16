@@ -217,11 +217,12 @@ namespace PootchdayBot.SlashCommands
         public async Task PosteGeburtstage()
         {
             GuildConfig gConfig = DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == Context.Guild.Id);
-            List<Birthdays> birthdays = DatabaseContext.DB.Birthdays.Where(x => x.GuildID == Context.Guild.Id).ToList();
+            List<Birthdays> listBirthdays = DatabaseContext.DB.Birthdays.Where(x => x.GuildID == Context.Guild.Id).ToList();
 
             await RemoveBirthdayRole(gConfig);
-
-            foreach (var birthday in birthdays)
+            string messageUser = string.Empty;
+            int countBirthdays = 0;
+            foreach (var birthday in listBirthdays)
             {
                 birthday.Birthday = new DateTime(DateTime.Now.Year, birthday.Birthday.Month, birthday.Birthday.Day);
 
@@ -241,24 +242,36 @@ namespace PootchdayBot.SlashCommands
                     IGuildUser user = Context.Guild.GetUserAsync(birthday.AccountID).Result;
                     
                     await SetBirthdayRole(gConfig, birthday, user);
-                    
-                    string message = string.Empty;
+
+                    countBirthdays++;
+
                     if (gConfig.Ping)
-                        message += user.Mention + "\n";
+                        messageUser += user.Mention + "\n";
                     else
-                        message += FormatString.HandleDiscordSpecialChar(birthday.GlobalUsername) + "\n";
-                    try
-                    {
-                        await Context.Guild.GetTextChannelAsync(gConfig.AnnounceChannelID).Result.SendMessageAsync(message);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.DebugInteraction("Beim erwähnen der Geburtstagsperson ist ein Fehler Aufgetretten.\n" +
-                            "DiscordServer: " + Context.Guild.Name + " ID: " + Context.Guild.Id + "\n" +
-                            ex);
-                    }
+                        messageUser += FormatString.HandleDiscordSpecialChar(birthday.GlobalUsername) + "\n";
                 }
             }
+
+            string messageHeader = string.Empty;
+            if (countBirthdays > 1)
+                messageHeader = gConfig.CustomMessage == "" ? $"Heute haben gleich {listBirthdays.Count} Geburtstag! Alles Gute zum Geburtstag:\n" : gConfig.CustomMessage + "\n";
+            else
+                messageHeader = gConfig.CustomMessage == "" ? "Heute hat eine User Geburtstag! Alles Gute zum Geburtstag:\n" : gConfig.CustomMessage + "\n";
+
+            string messageContent = messageHeader;
+            messageContent += messageUser;
+
+            try
+            {
+                await Context.Guild.GetTextChannelAsync(gConfig.AnnounceChannelID).Result.SendMessageAsync(messageContent);
+            }
+            catch (Exception ex)
+            {
+                Log.DebugInteraction("Beim erwähnen der Geburtstagsperson ist ein Fehler Aufgetretten.\n" +
+                    "DiscordServer: " + Context.Guild.Name + " ID: " + Context.Guild.Id + "\n" +
+                    ex);
+            }
+
             await RespondAsync("meow");
             await DeleteOriginalResponseAsync();
         }
