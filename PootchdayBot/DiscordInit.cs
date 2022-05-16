@@ -55,6 +55,7 @@ namespace PootchdayBot
             client.Connected += Client_Connected;
             client.GuildAvailable += Client_GuildAvailable;
             client.RoleDeleted += Client_RoleDeleted;
+            client.UserLeft += Client_UserLeft;
 
             await client.SetGameAsync("/hilfe", type: ActivityType.Listening);
 
@@ -70,6 +71,18 @@ namespace PootchdayBot
             // Block this task until the program is closed.
             await Task.Delay(-1);
 
+        }
+
+        private async Task Client_UserLeft(SocketGuild guild, SocketUser user)
+        {
+            Birthdays birthdayUser = DatabaseContext.DB.Birthdays.FirstOrDefault(x => x.GuildID == guild.Id && x.AccountID == user.Id);
+
+            if (birthdayUser == null)
+                return;
+
+            DatabaseContext.DB.Birthdays.Remove(birthdayUser);
+            Log.DebugDatabase("User: " + user.Username + " ID: " + user.Id + " left the Guild.\n" +
+                "User removed from Database");
         }
 
         private async Task Client_RoleDeleted(SocketRole role)
