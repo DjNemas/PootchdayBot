@@ -81,6 +81,7 @@ namespace PootchdayBot
                 return;
 
             DatabaseContext.DB.Birthdays.Remove(birthdayUser);
+            await DatabaseContext.DB.SaveChangesAsync();
             Log.DebugDatabase("User: " + user.Username + " ID: " + user.Id + " left the Guild.\n" +
                 "User removed from Database");
         }
