@@ -21,16 +21,19 @@ namespace PootchdayBot.BirthdayFunctions
             {
                 while (true)
                 {
-                    DateTime nextDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + 1).ToUniversalTime();
+                    DateTime nextDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).AddDays(1).ToUniversalTime();
+                    //DateTime nextDay = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second).AddSeconds(10).ToUniversalTime();
                     TimeSpan span = nextDay.Subtract(DateTime.UtcNow);
 
                     Log.DebugInteraction("Wait Reminder");
+                    //Log.DebugInteraction($"Span {span}");
                     await Task.Delay(span);
 
                     Log.DebugInteraction("Start Reminder");
                     Dictionary<ulong, List<Birthdays>> listBirthdays = new Dictionary<ulong, List<Birthdays>>();
                     try
                     {
+
                         foreach (var birthday in DatabaseContext.DB.Birthdays)
                         {
                             DateTime birthdayDate = ChangeToThisYear(birthday);
@@ -53,8 +56,8 @@ namespace PootchdayBot.BirthdayFunctions
                         foreach (var birthdayGuild in listBirthdays)
                         {
                             GuildConfig gConfig = DatabaseContext.DB.GuildConfigs.FirstOrDefault(x => x.GuildID == birthdayGuild.Key);
-                            // Remove Birthdayrole from last Birthdays
 
+                            // Remove Birthdayrole from last Birthdays
                             await RemoveBirthdayRole(gConfig);
 
                             // Create Message Header based on how much User have Birthday on current day.
@@ -91,6 +94,7 @@ namespace PootchdayBot.BirthdayFunctions
                         Log.ErrorInteraction("Error beim Reminder Task:\n" + ex.ToString());
                     }
                 }
+                Log.DebugInteraction("End Reminder");
             });
         }
 
@@ -137,7 +141,6 @@ namespace PootchdayBot.BirthdayFunctions
                 }
                 Log.DebugInteraction("Birthdayrole for User: " + user.Username + " on Guild " + user.Guild.Name + " setted.");
             }
-                
         }
         private DateTime ChangeToThisYear(Birthdays birthday)
         {
