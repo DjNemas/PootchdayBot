@@ -11,7 +11,7 @@ Einlade Link: https://discord.com/api/oauth2/authorize?client_id=972494503665618
   - In welchem Channel sollen die Benutzer beglückwünscht werden.
   - Modrolle für /einstellung Slashbefehle setzen
   - Eigenen glückwunsch Text setzen.
-  - Ob die Benutzer am Tag angepint (also mit @ erwähnt werden sollen) oder nicht.
+  - Ob die Benutzer am Tag angepingt (also mit @ erwähnt werden sollen) oder nicht.
 Und einiges mehr. Schaut euch dafür einfach die Slashbefehle an.
 
 
