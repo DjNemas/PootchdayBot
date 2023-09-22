@@ -1,3 +1,5 @@
+# Der Service für diesen Bot wurde eingestellt und der Server heruntergefahren. (22.09.2023)
+
 # Pootchday
 Geburtstags Bot für Discord auf Deutsch!
 Der Bot wurde komplett mit den neuen / Slashbefehlen entwickelt.
